@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 10:11:53 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/03 18:13:09 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/07 21:40:20 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define MAP_HEIGHT 24
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <mlx.h>
 
@@ -62,8 +63,19 @@ double		planeX = 0;
 double		planeY = .66;
 double		time = 0;
 double		oldTime = 0;
-int			h = 384;
-int			w = 512;
+int			w = 640;
+int			h = 480;
+
+void		*img;
+char		*pixels;
+int			bits_per_pixel;
+int			size_line;
+int			endian;
+
+int			texWidth = 64;
+int			texHeight = 64;
+int			**texture;
+//int			texture[8][texWidth * texHeight];
 
 struct s_key
 {
@@ -78,16 +90,76 @@ struct s_key
 	//TODO this for all the keys, put it in libgfx.
 };
 
+int		fake_floor(double x)
+{
+	return (int)(x + 100000) - 100000;
+}
+
 struct s_key *key;
+
+void	texture_init()
+{
+	texture = malloc(sizeof(int*) * 8);
+	for(int i = 0; i < 8; i++)
+	{
+		texture[i] = malloc(sizeof(int) * texWidth * texHeight);
+	}
+	//generate some textures
+	for(int x = 0; x < texWidth; x++)
+		for(int y = 0; y < texHeight; y++)
+		{
+			int xorcolor = (x * 256 / texWidth) ^ (y * 256 / texHeight);
+			//int xcolor = x * 256 / texWidth;
+			int ycolor = y * 256 / texHeight;
+			int xycolor = y * 128 / texHeight + x * 128 / texWidth;
+			texture[0][texWidth * y + x] =
+			   	65536 * 254 * (x != y && x != texWidth - y);
+			//flat red texture with black cross
+			texture[1][texWidth * y + x] =
+			   	xycolor + 256 * xycolor + 65536 * xycolor;//sloped greyscale
+			texture[2][texWidth * y + x] =
+			   	256 * xycolor + 65536 * xycolor;//sloped yellow gradient
+			texture[3][texWidth * y + x] =
+			   	xorcolor + 256 * xorcolor + 65536 * xorcolor; //xor greyscale
+			texture[4][texWidth * y + x] = 256 * xorcolor; //xor green
+			texture[5][texWidth * y + x] = 65536 * 192 * (x % 16 && y % 16);
+		   	//red bricks
+			texture[6][texWidth * y + x] = 65536 * ycolor; //red gradient
+			texture[7][texWidth * y + x] = 128 + 256 * 128 + 65536 * 128;
+		   	//flat grey texture
+		}
+}
+
+void	use_image(void)
+{
+	mlx_put_image_to_window(mlx, window, img, 0, 0);
+	mlx_destroy_image(mlx, img);
+}
+
+void	create_image(void)
+{
+	img = mlx_new_image(mlx, w, h);
+	pixels = mlx_get_data_addr(img, &bits_per_pixel, &size_line, &endian);
+}
+
+void	draw_point_to_img(int x, int y, int color)
+{
+	int i;
+
+	i = (x * (bits_per_pixel / 8)) + (y * size_line); 
+	pixels[i] = color;
+	pixels[++i] = color >> 8;
+	pixels[++i] = color >> 16;
+}
 
 int		loop_hook(void *nothing_right_now)
 {
 	int x;
 	x = 0;
 
+	create_image();
 	while (x < w)
 	{
-		//printf("LOOP, THERE IT IS! x:%d\n", x);
 		//calculate ray postion and directions
 		double cameraX = 2 * x / (double)w - 1; //x-coordinate in camera space
 		double rayPosX = posX;
@@ -178,6 +250,32 @@ int		loop_hook(void *nothing_right_now)
 
 		//
 		int color;
+
+		//texturing calculations
+		int texNum = world_map[mapX][mapY] - 1;
+
+		//calculate value of wallX
+		double wallX; //where exactly the wall was hit
+		wallX = side == 0
+			? rayPosY + perpWallDist * rayDirY
+			: rayPosX + perpWallDist * rayDirX;
+		wallX -= fake_floor(wallX);
+
+		//x coord on the texture
+		int texX = (int)(wallX * (double)(texWidth));
+		texX = texWidth - texX - 1;
+
+		for(int y = drawStart; y<drawEnd; y++)
+		{
+			int d = y * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
+			int texY = ((d * texHeight) / lineHeight) / 256;
+			color = texture[texNum][texHeight * texY + texX];
+			//make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
+			if(side == 1)
+				color = (color >> 1) & 8355711;
+			draw_point_to_img(x, y, color);
+		}
+		/*
 		switch (world_map[mapX][mapY])
 		{
 			case 1: color = 0x00FF0000; break;
@@ -192,12 +290,15 @@ int		loop_hook(void *nothing_right_now)
 
 		int i;
 		i = 0;
-		
+
+
 		while(i < drawEnd - drawStart)
 		{
-			mlx_pixel_put(mlx, window, x, drawStart + i, color);
+			draw_point_to_img(x, drawStart + i, color);
+			//mlx_pixel_put(mlx, window, x, drawStart + i, color);
 			i++;
 		}
+		*/
 		/* draw floor 
 		while(i < h)
 		{
@@ -205,6 +306,7 @@ int		loop_hook(void *nothing_right_now)
 			i++;
 		}
 		*/
+		
 
 #define MOVE_SPEED 0.000166666
 #define rotSpeed 0.000166666
@@ -267,7 +369,8 @@ int		loop_hook(void *nothing_right_now)
 	//frameTime is the time this frame has taken, in seconds
 	//mlx_string_put(mlx, window, 0, 0, 0x00FFFFFF, itoa(1.0 / frameTime));
 	//FPS Counter
-	mlx_clear_window(mlx, window);
+	use_image();
+	//mlx_clear_window(mlx, window);
 
 	//speed modifiers
 	//double moveSpeed = frameTime * 5.0; //constant value in squares/second
@@ -340,6 +443,7 @@ void	set_hooks(void *mlx, void *window)
 
 int main(int argc, char **argv)
 {
+	texture_init();
 	key = (struct s_key*)malloc(sizeof(struct s_key));
 	mlx = mlx_init();
 	window = mlx_new_window(mlx, w, h, "Wolf3d");
