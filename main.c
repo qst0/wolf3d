@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 10:11:53 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/07 21:40:20 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/08 17:17:36 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include <mlx.h>
 
@@ -33,7 +34,7 @@ int		world_map[MAP_WIDTH][MAP_HEIGHT]=
 	{1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,2,4,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,7,0,0,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -61,10 +62,15 @@ double		dirX = -1;
 double		dirY = 0;
 double		planeX = 0;
 double		planeY = .66;
-double		time = 0;
+double		curTime = 0;
 double		oldTime = 0;
 int			w = 640;
 int			h = 480;
+int			mouse_x;
+int			mouse_y;
+
+double		rotSpeed = 0.00016666;
+double		moveSpeed = 0.00016666;
 
 void		*img;
 char		*pixels;
@@ -76,6 +82,21 @@ int			texWidth = 64;
 int			texHeight = 64;
 int			**texture;
 //int			texture[8][texWidth * texHeight];
+
+
+typedef	struct	s_img
+{
+	int		id;
+	void	*ptr;
+	char	*pixels;
+	int		bit_per_pixel;
+	int		line_size;
+	int		endian;
+	int		width;
+	int		height;
+	int		x_offset;
+	int		y_offset;
+}				t_img;
 
 struct s_key
 {
@@ -89,6 +110,49 @@ struct s_key
 	int one:1;
 	//TODO this for all the keys, put it in libgfx.
 };
+
+#include "time.h"
+#include <mach/clock.h>
+#include <mach/mach.h>
+
+int		nlen(int n)
+{
+	int len = 1;
+	while (n)
+	{
+		n /= 10;
+		len++;
+	}
+	return (len);
+}
+
+char	*itoa(int i)
+{
+	char *result;
+	int len;
+
+	len = nlen(i);
+	result = (char*)malloc(len + 1);
+	result[len--] = '\0';
+	while (i)
+	{
+		result[len--] = i % 10 + '0';
+		i /= 10;
+	}
+	return (result);
+}
+
+void	ft_get_time(struct timespec *ts)
+{
+	clock_serv_t		cclock;
+	mach_timespec_t		mts;
+
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+	clock_get_time(cclock, &mts);
+	mach_port_deallocate(mach_task_self(), cclock);
+	ts->tv_sec = mts.tv_sec;
+	ts->tv_nsec = mts.tv_nsec;
+}
 
 int		fake_floor(double x)
 {
@@ -155,7 +219,29 @@ void	draw_point_to_img(int x, int y, int color)
 int		loop_hook(void *nothing_right_now)
 {
 	int x;
+	double frame_time;
+	struct timespec	ts;
 	x = 0;
+
+	ft_get_time(&ts);
+	//timeing for input and FPS counter
+	oldTime = curTime;
+	curTime = ts.tv_nsec;
+	frame_time = (double)(curTime - oldTime) / 1000000000.0;
+	printf("%f\n", frame_time);
+	printf("%f\n", 1.0 / frame_time);
+	if (frame_time > 0)
+	{
+		moveSpeed = frame_time * 3.7; //constant value in squares/second
+		rotSpeed = (double)M_PI * frame_time / 1.25; //constant value in radians/second
+	}
+	moveSpeed /= 1000;
+	rotSpeed /= 1000;
+	printf("move: %f\n", moveSpeed);
+	printf("rot: %f\n", rotSpeed);
+	//mlx_clear_window(mlx, window);	
+	mlx_string_put(mlx, window, 0, 0, 0x00FFFFFF, itoa(1.0 / frame_time));
+
 
 	create_image();
 	while (x < w)
@@ -164,11 +250,6 @@ int		loop_hook(void *nothing_right_now)
 		double cameraX = 2 * x / (double)w - 1; //x-coordinate in camera space
 		double rayPosX = posX;
 		double rayPosY = posY;
-		/*
-		double rayDir = M_PI - 0.33 * cameraX;	
-		double rayDirX = cos(rayDir);
-		double rayDirY = sin(rayDir);
-		*/
 		double rayDirX = dirX + planeX * cameraX;
 		double rayDirY = dirY + planeY * cameraX;
 		
@@ -248,14 +329,11 @@ int		loop_hook(void *nothing_right_now)
 		if (drawEnd >= h)
 			drawEnd = h - 1;
 
-		//
-		int color;
-
 		//texturing calculations
 		int texNum = world_map[mapX][mapY] - 1;
 
-		//calculate value of wallX
-		double wallX; //where exactly the wall was hit
+		//calculate value of wallX, where exactly the wall was hit.
+		double wallX;
 		wallX = side == 0
 			? rayPosY + perpWallDist * rayDirY
 			: rayPosX + perpWallDist * rayDirX;
@@ -263,10 +341,12 @@ int		loop_hook(void *nothing_right_now)
 
 		//x coord on the texture
 		int texX = (int)(wallX * (double)(texWidth));
-		texX = texWidth - texX - 1;
+		if(side == 0 && rayDirX > 0) texX = texWidth - texX - 1;
+		if(side == 1 && rayDirY < 0) texX = texWidth - texX - 1;	
 
 		for(int y = drawStart; y<drawEnd; y++)
 		{
+			int color;
 			int d = y * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
 			int texY = ((d * texHeight) / lineHeight) / 256;
 			color = texture[texNum][texHeight * texY + texX];
@@ -275,74 +355,59 @@ int		loop_hook(void *nothing_right_now)
 				color = (color >> 1) & 8355711;
 			draw_point_to_img(x, y, color);
 		}
-		/*
-		switch (world_map[mapX][mapY])
+		for(int i = drawEnd; i < h; i++)
 		{
-			case 1: color = 0x00FF0000; break;
-			case 2: color = 0x0000FF00; break;
-			case 3: color = 0x000000FF; break;
-			case 4: color = 0x00FFFFFF; break;
-			default: color = 0x00FFFF00; break;
+			int color;
+			int d = i * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
+			int texY = ((d * texHeight) / lineHeight) / 256;
+			color = texture[7][texHeight * texY + texX];
+			draw_point_to_img(x, i, color);
+			//draw_point_to_img(x, i, 0xFF00FF);
 		}
-
-		if (side == 1)
-			color = color / 2;
-
-		int i;
-		i = 0;
-
-
-		while(i < drawEnd - drawStart)
+		for(int i = 0; i < drawStart; i++)
 		{
-			draw_point_to_img(x, drawStart + i, color);
-			//mlx_pixel_put(mlx, window, x, drawStart + i, color);
-			i++;
+			int color;
+			int d = i * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
+			int texY = ((d * texHeight) / lineHeight) / 256;
+			color = texture[7][texHeight * texY + texX];
+			draw_point_to_img(x, i, color);
+			//draw_point_to_img(x, i, 0x00FFFF);
 		}
-		*/
-		/* draw floor 
-		while(i < h)
-		{
-			mlx_pixel_put(mlx, window, x, drawStart + i, 0x00FF00FF);
-			i++;
-		}
-		*/
 		
-
-#define MOVE_SPEED 0.000166666
-#define rotSpeed 0.000166666
-	
-		if (key->e)
+		//move character left / right (straife)	
+		if (key->d)
 		{
-			if(world_map[(int)(posX + dirX * MOVE_SPEED)][(int)posY] == 0)
-				posX += planeX * MOVE_SPEED;
-		   	if(world_map[(int)posX][(int)(posY + dirY * MOVE_SPEED)] == 0)	
-				posY += planeY * MOVE_SPEED;
+			if(world_map[(int)(posX + dirX * moveSpeed)][(int)posY] == 0)
+				posX += planeX * moveSpeed;
+		   	if(world_map[(int)posX][(int)(posY + dirY * moveSpeed)] == 0)	
+				posY += planeY * moveSpeed;
 		}
-		if (key->q)
+		if (key->a)
 		{
-			if(world_map[(int)(posX - planeX * MOVE_SPEED)][(int)posY] == 0)
-				posX -= planeX * MOVE_SPEED;
-		   	if(world_map[(int)posX][(int)(posY - planeY * MOVE_SPEED)] == 0)	
-				posY -= planeY * MOVE_SPEED;
+			if(world_map[(int)(posX - planeX * moveSpeed)][(int)posY] == 0)
+				posX -= planeX * moveSpeed;
+		   	if(world_map[(int)posX][(int)(posY - planeY * moveSpeed)] == 0)	
+				posY -= planeY * moveSpeed;
 		}
 		//move forward if no wall in front of you
 		if (key->w)
 		{
-			if(world_map[(int)(posX + dirX * MOVE_SPEED)][(int)posY] == 0)
-				posX += dirX * MOVE_SPEED;
-		   	if(world_map[(int)posX][(int)(posY + dirY * MOVE_SPEED)] == 0)	
-				posY += dirY * MOVE_SPEED;
+			if(world_map[(int)(posX + dirX * moveSpeed)][(int)posY] == 0)
+				posX += dirX * moveSpeed;
+		   	if(world_map[(int)posX][(int)(posY + dirY * moveSpeed)] == 0)	
+				posY += dirY * moveSpeed;
 		}
 		if (key->s)
 		{
-			if(world_map[(int)(posX - dirX * MOVE_SPEED)][(int)posY] == 0)
-				posX -= dirX * MOVE_SPEED;
-			if(world_map[(int)posX][(int)(posY - dirY * MOVE_SPEED)] == 0)
-				posY -= dirY * MOVE_SPEED;
+			if(world_map[(int)(posX - dirX * moveSpeed)][(int)posY] == 0)
+				posX -= dirX * moveSpeed;
+			if(world_map[(int)posX][(int)(posY - dirY * moveSpeed)] == 0)
+				posY -= dirY * moveSpeed;
 		}
-		if (key->d)
+		// Turn the character
+		//both camera direction and camera plane must be rotated
+		if (key->e)
 		{	
-			//both camera direction and camera plane must be rotated
 			double oldDirX = dirX;
 			dirX = dirX * cos(-rotSpeed) - dirY * sin(-rotSpeed);
 			dirY = oldDirX * sin(-rotSpeed) + dirY * cos(-rotSpeed);
@@ -350,9 +415,8 @@ int		loop_hook(void *nothing_right_now)
 			planeX = planeX * cos(-rotSpeed) - planeY * sin(-rotSpeed);
 			planeY = oldPlaneX * sin(-rotSpeed) + planeY * cos(-rotSpeed);
 		}
-		if (key->a)
+		if (key->q)
 		{
-			//both camera direction and camera plane must be rotated
 			double oldDirX = dirX;
 			dirX = dirX * cos(rotSpeed) - dirY * sin(rotSpeed);
 			dirY = oldDirX * sin(rotSpeed) + dirY * cos(rotSpeed);
@@ -362,24 +426,9 @@ int		loop_hook(void *nothing_right_now)
 		}
 		x++;
 	}
-	//timeing for input and FPS counter
-	oldTime = time;
-	//time = getTicks();
-	//double frameTime = (time - oldTime) / 1000.0;
-	//frameTime is the time this frame has taken, in seconds
-	//mlx_string_put(mlx, window, 0, 0, 0x00FFFFFF, itoa(1.0 / frameTime));
-	//FPS Counter
 	use_image();
-	//mlx_clear_window(mlx, window);
-
-	//speed modifiers
-	//double moveSpeed = frameTime * 5.0; //constant value in squares/second
-	//double rotSpeed = frameTime * 3.0; //constant value in radians/second
-	
 	return (0);
 }
-
-#include <stdlib.h>
 
 int		key_press_hook(int keycode, void *nothing)
 {
@@ -429,6 +478,34 @@ int		exit_hook(void *nothing)
 	exit(0);
 }
 
+//way left is 1 right is -1
+void	player_turn(int way, int speed_mod)
+{
+	double oldDirX = dirX;
+	double oldPlaneX = planeX;
+	
+	dirX = dirX * cos(rotSpeed * way * speed_mod)
+		- dirY * sin(rotSpeed * way * speed_mod);
+	dirY = oldDirX * sin(rotSpeed * way * speed_mod)
+		+ dirY * cos(rotSpeed * way * speed_mod);
+	planeX = planeX * cos(rotSpeed * way * speed_mod)
+		- planeY * sin(rotSpeed * way * speed_mod);
+	planeY = oldPlaneX * sin(rotSpeed * way * speed_mod)
+		+ planeY * cos(rotSpeed * way * speed_mod);
+}
+
+int		motion_hook(int x, int y, void *nothing)
+{
+	(void) nothing;
+	if (mouse_x < x)
+		player_turn(-1, 500);
+	else if (mouse_x > x)
+		player_turn(1, 500);
+	mouse_x = x;
+	mouse_y = y;
+	return (0);
+}
+
 void	set_hooks(void *mlx, void *window)
 {
 	mlx_do_key_autorepeatoff(mlx);
@@ -436,7 +513,7 @@ void	set_hooks(void *mlx, void *window)
 	mlx_hook(window, 3, 0, key_release_hook, 0000);
 	//mlx_hook(window, 4, 0, mouse_press_hook, 0000);
 	//mlx_hook(window, 5, 0, mouse_release_hook, 0000);
-	//mlx_hook(window, 6, 0, motion_hook, 0000);
+	mlx_hook(window, 6, 0, motion_hook, 0000);
 	//mlx_hook(window, 12, 0, expose_hook, 0000);
 	mlx_hook(window, 17, 0, exit_hook, 0000);
 }
@@ -447,9 +524,10 @@ int main(int argc, char **argv)
 	key = (struct s_key*)malloc(sizeof(struct s_key));
 	mlx = mlx_init();
 	window = mlx_new_window(mlx, w, h, "Wolf3d");
-	mlx_loop_hook(mlx, loop_hook, 0);
 	set_hooks(mlx, window);
+	mlx_loop_hook(mlx, loop_hook, 0);
 	mlx_loop(mlx);
 	(void) argc;
 	(void) argv;
+	return (0);
 }
