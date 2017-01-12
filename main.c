@@ -6,18 +6,22 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 10:11:53 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/08 17:17:36 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/12 15:20:02 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#define MAP_WIDTH 24
-#define MAP_HEIGHT 24
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <mlx.h>
+
+#include "time.h"
+#include <mach/clock.h>
+#include <mach/mach.h>
+
+#define MAP_WIDTH 24
+#define MAP_HEIGHT 24
 
 int		world_map[MAP_WIDTH][MAP_HEIGHT]=
 {
@@ -62,8 +66,12 @@ double		dirX = -1;
 double		dirY = 0;
 double		planeX = 0;
 double		planeY = .66;
+
 double		curTime = 0;
 double		oldTime = 0;
+int			cur_sec = 0;
+int			past = 0;
+
 int			w = 640;
 int			h = 480;
 int			mouse_x;
@@ -111,13 +119,11 @@ struct s_key
 	//TODO this for all the keys, put it in libgfx.
 };
 
-#include "time.h"
-#include <mach/clock.h>
-#include <mach/mach.h>
+struct s_key *key;
 
 int		nlen(int n)
 {
-	int len = 1;
+	int len = 0;
 	while (n)
 	{
 		n /= 10;
@@ -158,8 +164,6 @@ int		fake_floor(double x)
 {
 	return (int)(x + 100000) - 100000;
 }
-
-struct s_key *key;
 
 void	texture_init()
 {
@@ -216,6 +220,25 @@ void	draw_point_to_img(int x, int y, int color)
 	pixels[++i] = color >> 16;
 }
 
+void	player_turn(int way, int speed_mod)
+{
+	double oldDirX = dirX;
+	double oldPlaneX = planeX;
+	// Turn the character
+	// Left is 1
+	// Right is -1
+	// Both camera direction and camera plane must be rotated
+	
+	dirX = dirX * cos(rotSpeed * way * speed_mod)
+		- dirY * sin(rotSpeed * way * speed_mod);
+	dirY = oldDirX * sin(rotSpeed * way * speed_mod)
+		+ dirY * cos(rotSpeed * way * speed_mod);
+	planeX = planeX * cos(rotSpeed * way * speed_mod)
+		- planeY * sin(rotSpeed * way * speed_mod);
+	planeY = oldPlaneX * sin(rotSpeed * way * speed_mod)
+		+ planeY * cos(rotSpeed * way * speed_mod);
+}
+
 int		loop_hook(void *nothing_right_now)
 {
 	int x;
@@ -224,24 +247,27 @@ int		loop_hook(void *nothing_right_now)
 	x = 0;
 
 	ft_get_time(&ts);
+
+	//hack to count the time passed in seconds	
+	printf("curTime: %f\n", curTime / 100000000);
+	int moment = (int)(curTime / 100000000);
+	if (!past && moment == 9)
+	{
+		cur_sec++;
+		past = 1;
+	}
+	if (past && moment == 0)
+		past = 0;
+
 	//timeing for input and FPS counter
 	oldTime = curTime;
 	curTime = ts.tv_nsec;
 	frame_time = (double)(curTime - oldTime) / 1000000000.0;
-	printf("%f\n", frame_time);
-	printf("%f\n", 1.0 / frame_time);
 	if (frame_time > 0)
 	{
-		moveSpeed = frame_time * 3.7; //constant value in squares/second
-		rotSpeed = (double)M_PI * frame_time / 1.25; //constant value in radians/second
+		moveSpeed = (frame_time * 3.7) / 1000; //constant value in squares/second
+		rotSpeed = ((double)M_PI * frame_time / 1.25) / 1000; //constant value in radians/second
 	}
-	moveSpeed /= 1000;
-	rotSpeed /= 1000;
-	printf("move: %f\n", moveSpeed);
-	printf("rot: %f\n", rotSpeed);
-	//mlx_clear_window(mlx, window);	
-	mlx_string_put(mlx, window, 0, 0, 0x00FFFFFF, itoa(1.0 / frame_time));
-
 
 	create_image();
 	while (x < w)
@@ -344,7 +370,7 @@ int		loop_hook(void *nothing_right_now)
 		if(side == 0 && rayDirX > 0) texX = texWidth - texX - 1;
 		if(side == 1 && rayDirY < 0) texX = texWidth - texX - 1;	
 
-		for(int y = drawStart; y<drawEnd; y++)
+		for (int y = drawStart; y<drawEnd; y++)
 		{
 			int color;
 			int d = y * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
@@ -355,31 +381,33 @@ int		loop_hook(void *nothing_right_now)
 				color = (color >> 1) & 8355711;
 			draw_point_to_img(x, y, color);
 		}
-		for(int i = drawEnd; i < h; i++)
-		{
-			int color;
-			int d = i * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
-			int texY = ((d * texHeight) / lineHeight) / 256;
-			color = texture[7][texHeight * texY + texX];
-			draw_point_to_img(x, i, color);
-			//draw_point_to_img(x, i, 0xFF00FF);
-		}
-		for(int i = 0; i < drawStart; i++)
-		{
-			int color;
-			int d = i * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
-			int texY = ((d * texHeight) / lineHeight) / 256;
-			color = texture[7][texHeight * texY + texX];
-			draw_point_to_img(x, i, color);
-			//draw_point_to_img(x, i, 0x00FFFF);
-		}
 		
+		/* floor and ceiling hacky glitch look */
+/*
+		for (int i = drawEnd; i < h; i++)
+		{
+			int color;
+			int d = i * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
+			int texY = ((d * texHeight) / lineHeight) / 256;
+			color = texture[7][texHeight * texY + texX];
+			draw_point_to_img(x, i, color);
+		}
+
+		for (int i = 0; i < drawStart; i++)
+		{
+			int color;
+			int d = i * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
+			int texY = ((d * texHeight) / lineHeight) / 256;
+			color = texture[7][texHeight * texY + texX];
+			draw_point_to_img(x, i, color);
+		}
+*/		
 		//move character left / right (straife)	
 		if (key->d)
 		{
-			if(world_map[(int)(posX + dirX * moveSpeed)][(int)posY] == 0)
+			if(world_map[(int)(posX + planeX * moveSpeed)][(int)posY] == 0)
 				posX += planeX * moveSpeed;
-		   	if(world_map[(int)posX][(int)(posY + dirY * moveSpeed)] == 0)	
+		   	if(world_map[(int)posX][(int)(posY + planeY * moveSpeed)] == 0)	
 				posY += planeY * moveSpeed;
 		}
 		if (key->a)
@@ -404,37 +432,29 @@ int		loop_hook(void *nothing_right_now)
 			if(world_map[(int)posX][(int)(posY - dirY * moveSpeed)] == 0)
 				posY -= dirY * moveSpeed;
 		}
-		// Turn the character
-		//both camera direction and camera plane must be rotated
 		if (key->e)
-		{	
-			double oldDirX = dirX;
-			dirX = dirX * cos(-rotSpeed) - dirY * sin(-rotSpeed);
-			dirY = oldDirX * sin(-rotSpeed) + dirY * cos(-rotSpeed);
-			double oldPlaneX = planeX;
-			planeX = planeX * cos(-rotSpeed) - planeY * sin(-rotSpeed);
-			planeY = oldPlaneX * sin(-rotSpeed) + planeY * cos(-rotSpeed);
-		}
+			player_turn(-1, 1);
 		if (key->q)
-		{
-			double oldDirX = dirX;
-			dirX = dirX * cos(rotSpeed) - dirY * sin(rotSpeed);
-			dirY = oldDirX * sin(rotSpeed) + dirY * cos(rotSpeed);
-			double oldPlaneX = planeX;
-			planeX = planeX * cos(rotSpeed) - planeY * sin(rotSpeed);
-			planeY = oldPlaneX * sin(rotSpeed) + planeY * cos(rotSpeed);
-		}
+			player_turn(1, 1);
 		x++;
 	}
-	use_image();
+	mlx_put_image_to_window(mlx, window, img, 0, 0);
+	mlx_destroy_image(mlx, img);
+	// Now the window is ready for adding stuff on top of the wolf3d map
+
+	mlx_string_put(mlx, window, 100, 0, 0x00FFFFFF, "Wolf 3D");
+	mlx_string_put(mlx, window, 0, 0, 0x00FFFFFF, itoa((int)(1.0 / frame_time)));
+	mlx_string_put(mlx, window, 400, 0, 0x00FFFFFF, itoa(cur_sec));
+
+	//animate test
+	//make a row of blocks one at a time, of each type down row 10 each sec
+	world_map[cur_sec % 22 + 1][10] = cur_sec % 7;
+
 	return (0);
 }
 
 int		key_press_hook(int keycode, void *nothing)
 {
-	printf("posY: %f\n", posY);
-	printf("posX: %f\n", posX);
-	printf("Keycode: %d\n", keycode);
 	(void) nothing;
 	if (keycode == 12)
 		key->q = 1;
@@ -455,7 +475,6 @@ int		key_press_hook(int keycode, void *nothing)
 
 int		key_release_hook(int keycode, void *nothing)
 {
-	printf("Keycode: %d\n", keycode);
 	(void) nothing;
 	if (keycode == 12)
 		key->q = 0;
@@ -476,22 +495,6 @@ int		exit_hook(void *nothing)
 {
 	(void) nothing;
 	exit(0);
-}
-
-//way left is 1 right is -1
-void	player_turn(int way, int speed_mod)
-{
-	double oldDirX = dirX;
-	double oldPlaneX = planeX;
-	
-	dirX = dirX * cos(rotSpeed * way * speed_mod)
-		- dirY * sin(rotSpeed * way * speed_mod);
-	dirY = oldDirX * sin(rotSpeed * way * speed_mod)
-		+ dirY * cos(rotSpeed * way * speed_mod);
-	planeX = planeX * cos(rotSpeed * way * speed_mod)
-		- planeY * sin(rotSpeed * way * speed_mod);
-	planeY = oldPlaneX * sin(rotSpeed * way * speed_mod)
-		+ planeY * cos(rotSpeed * way * speed_mod);
 }
 
 int		motion_hook(int x, int y, void *nothing)
@@ -520,6 +523,8 @@ void	set_hooks(void *mlx, void *window)
 
 int main(int argc, char **argv)
 {
+	(void) argc;
+	(void) argv;
 	texture_init();
 	key = (struct s_key*)malloc(sizeof(struct s_key));
 	mlx = mlx_init();
@@ -527,7 +532,5 @@ int main(int argc, char **argv)
 	set_hooks(mlx, window);
 	mlx_loop_hook(mlx, loop_hook, 0);
 	mlx_loop(mlx);
-	(void) argc;
-	(void) argv;
 	return (0);
 }
