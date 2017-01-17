@@ -5,10 +5,10 @@ NAME = wolf3d
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -O3
 
-MAIN = main.c
+MAIN = main.c guts.c hooks.c keys.c time.c utils.c texture.c
 
 FRAMEWORKS = -framework OpenGL -framework AppKit
-INC = -I ./include
+INC = -I .
 
 INC_MINILIBX = -I minilibx
 LINK_MINILIBX = -L minilibx -lmlx
@@ -21,7 +21,7 @@ minilibx/libmlx.a:
 	@make -C minilibx re
 
 $(NAME): minilibx/libmlx.a
-	$(CC) $(MAIN) $(MINILIBX) $(FRAMEWORKS) -o $(NAME)
+	$(CC) $(MAIN) $(MINILIBX) $(INC) $(FRAMEWORKS) -o $(NAME)
 	@echo "Creating ./$(NAME)"
 
 clean:

@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 20:37:57 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/12 21:59:57 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/16 23:51:31 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@
 **	"/ -  =012345"		If you find anything missing please let me know.
 **	"67 89";
 */
+
+/* This isn't the whole thing, look above. */
+# define KEY_STRING "asdfhgzxcvbqweyt123465=97-80]ou[ip lj\"k;\\,/nm."
 
 # define KEY_A 0
 # define KEY_S 1
@@ -65,6 +68,7 @@
 # define KEY_N 45
 # define KEY_M 46
 # define KEY_TAB 48
+# define KEY_ESC 53
 # define KEY_PLUS 69
 # define KEY_MINUS 78
 # define KEY_LEFT 123
