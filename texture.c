@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 06:21:08 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/17 06:23:30 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/18 05:26:21 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	texture_init(t_view *v)
 				0x100 * 0xFF * (x % 16 && y % 16);
 			//blue bricks
 			v->texture[7][v->tex_width * y + x] =
-			   	0xFF * (x % 32 && y % 16);
+			   	0xFF * (x % 32 && y % 32);
 			//red gradient left dark right bright
 			//v->texture[6][v->tex_width * y + x] = 0x10000 * xcolor;	
 			
