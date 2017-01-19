@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/23 03:27:52 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/18 05:18:25 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/19 02:28:00 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@
 # define GEN_TEX_COUNT 8
 # define TEX_WIDTH 64
 # define TEX_HEIGHT 64
-# define WINDOW_WIDTH 600//960
-# define WINDOW_HEIGHT 400//600
+# define WINDOW_WIDTH 960
+# define WINDOW_HEIGHT 600
 
 typedef struct	s_2dp
 {
@@ -125,7 +125,7 @@ void	draw_filled_square(t_view *v, t_2dp p, int size, int color);
 void	put_minimap(t_view *v);
 void	create_minimap(t_view *v);
 
-void	player_turn(t_view *v, int way, int speed_mod);
+void	player_turn(t_view *v, int way, double speed_mod);
 
 int		loop_hook(t_view *v);
 int		key_press_hook(int keycode, t_view *v);

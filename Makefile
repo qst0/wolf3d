@@ -21,7 +21,7 @@ minilibx/libmlx.a:
 	@make -C minilibx re
 
 $(NAME): minilibx/libmlx.a
-	$(CC) $(MAIN) $(MINILIBX) $(INC) $(FRAMEWORKS) -o $(NAME)
+	$(CC) $(CFLAGS) $(MAIN) $(MINILIBX) $(INC) $(FRAMEWORKS) -o $(NAME)
 	@echo "Creating ./$(NAME)"
 
 clean:

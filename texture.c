@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 06:21:08 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/18 05:26:21 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/19 03:38:58 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ void	texture_init(t_view *v)
 		for(int y = 0; y < v->tex_height; y++)
 		{
 			int xorcolor = (x * 256 / v->tex_width) ^ (y * 256 / v->tex_height);
-			int xcolor = x * 256 / v->tex_width;
-			int ycolor = y * 256 / v->tex_height;
+			//int xcolor = x * 256 / v->tex_width;
+			//int ycolor = y * 256 / v->tex_height;
 			int xycolor = y * 128 / v->tex_height + x * 128 / v->tex_width;
 
 			//bright red with black cross

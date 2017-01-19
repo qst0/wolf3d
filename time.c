@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 06:11:22 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/17 06:11:40 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/19 02:22:56 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ void	update_time(t_view *v)
 	if (v->frame_time > 0)
 	{
 		//constant value in squares/second
-		v->move_speed = (v->frame_time * 3.7) / 1000;
+		v->move_speed = (v->frame_time * 3.7);
 		//constant value in radians/second	
-		v->rot_speed = ((double)M_PI * v->frame_time / 1.25) / 1000;
+		v->rot_speed = ((double)M_PI * v->frame_time / 1.25);
 	}
 }

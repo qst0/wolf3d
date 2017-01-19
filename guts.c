@@ -6,40 +6,21 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 05:47:32 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/18 05:35:42 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/19 05:22:42 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <wolf.h>
 
+# define ABS(x) (((x) < 0) ? -(x) : (x))
+# define SPRITE_COUNT 3
+# define TILE_AT(x, y) world_map[(int)(x)][(int)(y)]
+
+void	sprite_casting(t_view *v);
+void	player_movement_strafe_turn(t_view *v);
+void	player_movement_forward_backward(t_view *v);
+
 int		world_map[MAP_WIDTH][MAP_HEIGHT]=
-/*{
-	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,-2,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,4,0,3,0,3,0,0,0,1},
-	{1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,2,0,5,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
-	{1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,2,2,-2,2,2,0,0,0,0,2,0,3,0,3,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,1,0,0,0,-2,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,7,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,-1,-1,-1,0,0,0,0,0,0,0,0,0,1},
-	{1,4,4,4,4,4,4,4,4,0,0,-1,-1,-1,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,4,0,0,0,0,4,0,0,-1,-1,-1,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-};
-*/
 {
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},	
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -67,21 +48,6 @@ int		world_map[MAP_WIDTH][MAP_HEIGHT]=
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-int freeze;
-int	froze_a;
-int	froze_s;
-int	froze_d;
-int	froze_w;
-
-
-
-
-
-
-
-
-# define SPRITE_COUNT 2
-
 typedef struct		s_sprite
 {
 	t_2dp	pos;
@@ -96,24 +62,22 @@ double		sprite_dist[SPRITE_COUNT];
 
 void	sprite_init()
 {
-	sprite[0].pos.x = 10;
-	sprite[0].pos.y = 10;
-	sprite[0].texture = 7;
-
-	sprite[1].pos.x = 2;
+	sprite[0].pos.x = 22;
+	sprite[0].pos.y = 2;
+	sprite[0].texture = 3;
+	
+	sprite[1].pos.x = 21;
 	sprite[1].pos.y = 2;
-	sprite[1].texture = 7;
+	sprite[1].texture = 4;
+
+	sprite[2].pos.x = 22;
+	sprite[2].pos.y = 22;
+	sprite[2].texture = 2;
 }
 
 
-
-
-
-
-
-
 /* Left is 1, right is -1, both camera direction and plane must be rotated */
-void	player_turn(t_view *v, int way, int speed_mod)
+void	player_turn(t_view *v, int way, double speed_mod)
 {
 	double old_dir_x = v->dir.x;
 	double old_plane_x = v->plane.x;
@@ -241,10 +205,10 @@ int		loop_hook(t_view *v)
 		set_step_and_side_dist(&cast);
 
 		//Preform DDA - Digital Differential Analysis
+		int cast_tile = world_map[cast.map_x][cast.map_y];
 		
 		while (cast.hit == 0)
 		{
-			//jump to the next map square in x-dir, or in y-dir
 			if (cast.side_dist.x < cast.side_dist.y)
 			{
 				cast.side_dist.x += cast.delta_dist.x;
@@ -257,13 +221,13 @@ int		loop_hook(t_view *v)
 				cast.map_y += cast.step_y;
 				cast.side = 1;
 			}
-			//Check if the ray has hit a wall
-			if (world_map[cast.map_x][cast.map_y] > 0)
+			cast_tile = world_map[cast.map_x][cast.map_y];
+			if (cast_tile > 0)
 				cast.hit = 1;
 		}
 
-		/* Calculate distance projected on camera direction
-		 * (oblique distance will have fisheye effect) */
+		// Calculate distance projected on camera direction
+		// (oblique distance will have fisheye effect)
 		if (cast.side == 0) 
 			cast.perp_wall_dist = (cast.map_x - cast.ray_pos.x 
 					+ (1 - cast.step_x) / 2) / cast.ray_dir.x;
@@ -282,6 +246,8 @@ int		loop_hook(t_view *v)
 		if (cast.draw_end >= v->h)
 			cast.draw_end = v->h - 1;
 
+		//Texure Calculations
+
 		/* calculate value of wall_x, where exactly the wall was hit */
 		cast.wall_x = cast.side == 0
 			? cast.ray_pos.y + cast.perp_wall_dist * cast.ray_dir.y
@@ -290,10 +256,7 @@ int		loop_hook(t_view *v)
 
 		/* x coord on the texture */
 		cast.tex_x = (int)(cast.wall_x * (double)(v->tex_width));
-		if (cast.side == 0 && cast.ray_dir.x > 0)
-			cast.tex_x = v->tex_width - cast.tex_x - 1;
-		if (cast.side == 1 && cast.ray_dir.y < 0)
-			cast.tex_x = v->tex_width - cast.tex_x - 1;	
+		cast.tex_x = v->tex_width - cast.tex_x - 1;
 
 		/* Draw the wall sliver */	
 		for (int y = cast.draw_start; y < cast.draw_end; y++)
@@ -301,20 +264,22 @@ int		loop_hook(t_view *v)
 			int color;
 			int d;
 			
-			d = y * 256 - v->h * 128 + cast.line_height * 128;
 			//256 and 128 factors to avoid floats
+			d = y * 256 - v->h * 128 + cast.line_height * 128;
 			cast.tex_y = ((d * v->tex_height) / cast.line_height) / 256;
-			color = v->texture[world_map[cast.map_x % 24][cast.map_y % 24] - 1]
+			color = v->texture[cast_tile - 1]
 				[v->tex_height * cast.tex_y + cast.tex_x];
+			
 			if (cast.side == 1)
-				color = (color >> 1) & 0x7F7F7F; //8355711;
+				color = (color >> 1) & 0x7F7F7F;
 			draw_point_to_img(&v->image, x, y, color);
 		}
+
 
 		// Set the z_buff for the sprite casting
 		z_buff[x] = cast.perp_wall_dist;
 
-		/* Floor Casting */
+		// Floor Casting 
 		t_2dp floor_wall;
 
 		if (cast.side == 0 && cast.ray_dir.x > 0) 
@@ -381,202 +346,17 @@ int		loop_hook(t_view *v)
 			draw_point_to_img(&v->image, x, v->h - y, color);
 		}	
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		//SPRITE CASTING
-		int i = -1;
-		while(++i < SPRITE_COUNT)
-		{
-			sprite_order[i] = i;
-			sprite_dist[i] = ((v->pos.x - sprite[i].pos.x) * (v->pos.x - sprite[i].pos.x) +
-					(v->pos.y - sprite[i].pos.y) * (v->pos.y - sprite[i].pos.y));
-		}
-		comb_sort(sprite_order, sprite_dist, SPRITE_COUNT);
-
-		i = -1;
-		while(++i < SPRITE_COUNT)
-		{
-			t_2dp sprite_pos;
-			sprite_pos.x = sprite[sprite_order[i]].pos.x - v->pos.x;
-			sprite_pos.y = sprite[sprite_order[i]].pos.y - v->pos.y;
-
-			double inv_det = 1.0 / (v->plane.x * v->dir.y - v->dir.x * v->plane.y);
-
-			t_2dp transform;
-			transform.x = inv_det * (v->dir.y * sprite_pos.x - v->dir.x * sprite_pos.y);
-			transform.y = inv_det * (-v->plane.y * sprite_pos.x + v->plane.x * sprite_pos.y); // Depth inside the screen
-
-			int sprite_screen_x = (int)((v->w / 2) * (1 + transform.x / transform.y));
-
-			int sprite_height = (int)(v->h / transform.y);
-			sprite_height = sprite_height < 0 ? -sprite_height : sprite_height; //ABS
-
-			int draw_start_y = -sprite_height / 2 + v->h / 2;
-			if (draw_start_y < 0)
-				draw_start_y = 0;
-			int draw_end_y = sprite_height / 2 + v->h / 2;
-			if (draw_end_y >= v->h)
-				draw_end_y = v->h - 1;
-
-			int sprite_width = (int)(v->h / transform.y);
-			sprite_width = sprite_width < 0 ? -sprite_width : sprite_width; //ABS
-			int draw_start_x = -sprite_width / 2 + sprite_screen_x;
-			if (draw_start_x < 0)
-				draw_start_x = 0;
-			int draw_end_x = sprite_width / 2 + sprite_screen_x;
-			if (draw_end_x >= v->w)
-				draw_end_x = v->w - 1;
-
-			int j = draw_start_x - 1;
-			while (++j < draw_end_x)
-			{
-				int tex_x = (int)(256 * (j - (-sprite_width / 2 + sprite_screen_x)) * v->tex_width / sprite_width / 256);
-				if (transform.y > 0 && j > 0 && j < v->w && transform.y < z_buff[j])
-				{
-					int y = draw_start_y - 1;
-					while (++y < draw_end_y)
-					{
-						int d = y * 256 - v->h * 128 + sprite_height * 128;
-						int tex_y = ((d * v->tex_height) / sprite_height) / 256;
-						int color = v->texture[sprite[sprite_order[i]].texture][v->tex_width * tex_y + tex_x];
-						if (color != 0xFF)
-							draw_point_to_img(&v->image, j, y, color);
-					}
-				}
-			}	
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		/* floor and ceiling hacky glitch look */
-		/*
-		for (int y = cast.draw_end; y < v->h; y++)
-		{
-			int color;
-			int d;
-			   
-			d = y * 256 - v->h * 128 + cast.line_height * 128;
-			cast.tex_y = ((d * v->tex_height) / cast.line_height) / 256;
-			color = v->texture[7]
-				[v->tex_height * cast.tex_y + cast.tex_x];
-			if (cast.side == 1)
-				color = (color >> 1) & 0x7F7F7F; //8355711;
-			draw_point_to_img(&v->image, x, y, color);
-		}
-
-		for (int y = 0; y < cast.draw_start; y++)
-		{
-			int color;
-			int d;
-		   
-			d = y * 256 - v->h * 128 + cast.line_height * 128;
-			cast.tex_y = ((d * v->tex_height) / cast.line_height) / 256;
-			color = v->texture[0][v->tex_height * cast.tex_y + cast.tex_x];
-			if (cast.side == 1)
-				color = (color >> 1) & 0x7F7F7F; //8355711;
-			draw_point_to_img(&v->image, x, y, color);
-		}
-		*/
-
-
-		//We are done with cast.
-		//move character left / right (straife)	
-		
-		int cur_tex = world_map[(int)v->pos.x][(int)v->pos.y];
-		
-		if ((freeze && froze_d) || v->key.d)
-		{
-			if (world_map[(int)(v->pos.x + v->plane.x * v->move_speed)]
-					[(int)v->pos.y] < 1)
-				v->pos.x += v->plane.x * v->move_speed;
-		   	if (world_map[(int)v->pos.x]
-					[(int)(v->pos.y + v->plane.y * v->move_speed)] < 1)	
-				v->pos.y += v->plane.y * v->move_speed;
-		}
-		if ((freeze && froze_a) || v->key.a)
-		{
-			if (world_map[(int)(v->pos.x - v->plane.x * v->move_speed)]
-					[(int)v->pos.y] < 1)
-				v->pos.x -= v->plane.x * v->move_speed;
-		   	if (world_map[(int)v->pos.x]
-					[(int)(v->pos.y - v->plane.y * v->move_speed)] < 1)	
-				v->pos.y -= v->plane.y * v->move_speed;
-		}
-		//move forward if no wall in front of you
-		if ((freeze && froze_w) || v->key.w)
-		{
-			if(world_map[(int)(v->pos.x + v->dir.x * v->move_speed)]
-					[(int)v->pos.y] < 1)
-				v->pos.x += v->dir.x * v->move_speed;
-		   	if(world_map[(int)v->pos.x]
-					[(int)(v->pos.y + v->dir.y * v->move_speed)] < 1)	
-				v->pos.y += v->dir.y * v->move_speed;
-		}
-		if ((freeze && froze_s) || v->key.s)
-		{
-			
-			if(world_map[(int)(v->pos.x - v->dir.x * v->move_speed)]
-					[(int)v->pos.y] < 1)
-				v->pos.x -= v->dir.x * v->move_speed;
-		   	if(world_map[(int)v->pos.x]
-					[(int)(v->pos.y - v->dir.y * v->move_speed)] < 1)	
-				v->pos.y -= v->dir.y * v->move_speed;
-		}
-
-		//rotate
-		if (v->key.e)
-			player_turn(v, -1, 1);
-		if (v->key.q)
-			player_turn(v, 1, 1);
+		sprite_casting(v);
 		x++;
-
-		//Slide on ice
-		if(cur_tex == -1 && !freeze)
-		{
-			freeze = 1;
-			froze_a = v->key.a;
-			froze_d = v->key.d;
-			froze_w = v->key.w;
-			froze_s = v->key.s;
-		}
-		else if (cur_tex != -1 && freeze)
-			freeze = 0;
 	}
+	
+	player_movement_strafe_turn(v); 
+	player_movement_forward_backward(v);
+
 	mlx_put_image_to_window(v->mlx, v->window, v->image.ptr,
 			v->image.x_offset, v->image.y_offset);
 	mlx_destroy_image(v->mlx, v->image.ptr);
-	
-	
-	
+		
 	// Now the window is ready for adding stuff on top of the wolf3d map
 	mlx_string_put(v->mlx, v->window, 100, 0, 0x00FFFFFF, "Wolf 3D");
 	mlx_string_put(v->mlx, v->window, 0, 0, 0x00FFFFFF,
@@ -585,10 +365,136 @@ int		loop_hook(t_view *v)
 
 	//animate test
 	//make a row of blocks one at a time, of each type down row 10 each sec
-	//world_map[v->cur_sec % 22 + 1][10] = v->cur_sec % GEN_TEX_COUNT;
+	//TILE_AT(v->cur_sec % 22 + 1, 10) = v->cur_sec % GEN_TEX_COUNT;
 
 	put_minimap(v);
 	return (0);
+}
+
+void	sprite_casting(t_view *v)
+{
+	int i = -1;
+	while(++i < SPRITE_COUNT)
+	{
+		sprite_order[i] = i;
+		sprite_dist[i] = ((v->pos.x - sprite[i].pos.x) * (v->pos.x - sprite[i].pos.x) +
+				(v->pos.y - sprite[i].pos.y) * (v->pos.y - sprite[i].pos.y));
+	}
+	comb_sort(sprite_order, sprite_dist, SPRITE_COUNT);
+
+	i = -1;
+	while(++i < SPRITE_COUNT)
+	{
+		t_2dp sprite_pos;
+		t_2dp transform;
+		double inv_det;
+		int sprite_shrink;
+		int sprite_move;
+		int sprite_height;
+		int draw_start_y;
+		int draw_end_y;
+		int sprite_screen_x;
+		int sprite_width;
+		int draw_start_x;
+		int draw_end_x;
+		int col;
+
+		inv_det = 1.0 / (v->plane.x * v->dir.y - v->dir.x * v->plane.y);
+		sprite_pos.x = sprite[sprite_order[i]].pos.x - v->pos.x;
+		sprite_pos.y = sprite[sprite_order[i]].pos.y - v->pos.y;
+		transform.x = inv_det * (v->dir.y * sprite_pos.x - v->dir.x * sprite_pos.y);
+		transform.y = inv_det * (-v->plane.y * sprite_pos.x + v->plane.x * sprite_pos.y);
+		sprite_shrink = 16; //scales down by this amount
+		sprite_height = ABS((int)(v->h / transform.y)) / sprite_shrink;
+		sprite_width = ABS((int)(v->h / transform.y)) / sprite_shrink;
+		sprite_move = v->tex_height * (sprite_shrink > 1 ? 4 : 1); //Still not sure why, but it works.
+		sprite_move = (int)(sprite_move / transform.y);
+		
+		draw_start_y = -sprite_height / 2 + v->h / 2 + sprite_move;
+		draw_end_y = sprite_height / 2 + v->h / 2 + sprite_move;
+		sprite_screen_x = (int)((v->w / 2) * (1 + transform.x / transform.y));
+		draw_start_x = -sprite_width / 2 + sprite_screen_x;
+		draw_end_x = sprite_width / 2 + sprite_screen_x;
+
+
+		if (draw_start_y < 0)
+			draw_start_y = 0;
+		if (draw_start_x < 0)
+			draw_start_x = 0;
+		if (draw_end_y >= v->h)
+			draw_end_y = v->h - 1;
+		if (draw_end_x >= v->w)
+			draw_end_x = v->w - 1;
+
+		col = draw_start_x - 1;
+		if (sprite_screen_x > 0 && transform.y > 0 && draw_end_x > sprite_screen_x 
+				&& sprite_screen_x < v->w && draw_start_y < draw_end_y)
+		{
+			while (++col < draw_end_x)
+			{
+				int tex_x = (int)((col - (-sprite_width / 2 + sprite_screen_x)) * v->tex_width / sprite_width);
+				if (col > 0 && col < v->w && transform.y < z_buff[col])
+				{
+					int y = draw_start_y - 1;
+					while (++y < draw_end_y)
+					{
+						int d = (y - sprite_move) * 256 - v->h * 128 + sprite_height * 128;
+						int tex_y = ((d * v->tex_height) / sprite_height) / 256;
+						int color = v->texture[sprite[sprite_order[i]].texture][v->tex_width * tex_y + tex_x];
+						draw_point_to_img(&v->image, col, y, color);
+					}
+				}
+			}
+		}
+	}
+}
+
+void player_movement_strafe_turn(t_view *v)
+{
+	t_2dp strafe;
+
+	strafe.x = v->plane.x * v->move_speed;
+	strafe.y = v->plane.y * v->move_speed;
+	if (v->key.d)
+	{
+		if (TILE_AT(v->pos.x + strafe.x, v->pos.y) < 1)
+			v->pos.x += strafe.x;
+		if (TILE_AT(v->pos.x, v->pos.y + strafe.y) < 1)	
+			v->pos.y += strafe.y;
+	}
+	else if (v->key.a)
+	{
+		if (TILE_AT(v->pos.x - strafe.x, v->pos.y) < 1)
+			v->pos.x -= strafe.x;
+		if (TILE_AT(v->pos.x, v->pos.y - strafe.y) < 1)	
+			v->pos.y -= strafe.y;
+	}
+	if (v->key.e)
+		player_turn(v, -1, 1);
+	else if (v->key.q)
+		player_turn(v, 1, 1);
+}
+
+void	player_movement_forward_backward(t_view *v)
+{
+		t_2dp move;
+
+		move.x = v->dir.x * v->move_speed;	
+		move.y = v->dir.y * v->move_speed;	
+		if (v->key.w)
+		{
+			if (TILE_AT(v->pos.x + move.x, v->pos.y) < 1)
+				v->pos.x += move.x;
+		   	if (TILE_AT(v->pos.x, v->pos.y + move.y) < 1)	
+				v->pos.y += move.y;
+		}
+		else if (v->key.s)
+		{	
+			if (TILE_AT(v->pos.x - move.x, v->pos.y) < 1)
+				v->pos.x -= move.x;
+		   	if (TILE_AT(v->pos.x, v->pos.y - move.y) < 1)	
+				v->pos.y -= move.y;
+		}
 }
 
 void	use_image(t_view *v)
@@ -679,11 +585,6 @@ t_view	*create_view(int w, int h, char *title)
 	sprite_init();
 	view->w = w;
 	view->h = h;
-	freeze = 0;
-	froze_a = 0;
-	froze_d = 0;
-	froze_s = 0;
-	froze_w = 0;
 	view->pos.x = 22;
 	view->pos.y = 12;
 	view->dir.x = -1;
