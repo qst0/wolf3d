@@ -1,45 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   image.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/17 06:15:06 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/24 20:52:19 by myoung           ###   ########.fr       */
+/*   Created: 2017/01/19 05:44:26 by myoung            #+#    #+#             */
+/*   Updated: 2017/01/24 19:46:38 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <wolf.h>
 
-int		nlen(int n)
+void	use_image(t_view *v)
 {
-	int len = 0;
-	while (n)
-	{
-		n /= 10;
-		len++;
-	}
-	return (len);
+	mlx_put_image_to_window(v->mlx, v->window, v->image.ptr,
+			v->image.x_offset, v->image.y_offset);
+	mlx_destroy_image(v->mlx, v->image.ptr);
 }
 
-char	*itoa(int i)
+void	create_image(void *mlx, t_img *image, int w, int h)
 {
-	char *result;
-	int len;
-
-	len = nlen(i);
-	result = (char*)malloc(len + 1);
-	result[len--] = '\0';
-	while (i)
-	{
-		result[len--] = i % 10 + '0';
-		i /= 10;
-	}
-	return (result);
-}
-
-int		fake_floor(double x)
-{
-	return (int)(x + 100000) - 100000;
+	image->ptr = mlx_new_image(mlx, w, h);
+	image->pixels = mlx_get_data_addr(image->ptr,
+			&image->bits_per_pixel,
+			&image->size_line,
+			&image->endian);
 }
