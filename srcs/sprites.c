@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 22:59:07 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/24 22:07:46 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/30 00:18:46 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,10 @@ typedef struct		s_sprite
 	int		texture;
 }					t_sprite;
 
-#define SPRITE_COUNT 5
+#define SPRITE_COUNT 42
 t_sprite	sprite[SPRITE_COUNT];
 int			sprite_order[SPRITE_COUNT];
 double		sprite_dist[SPRITE_COUNT];
-
-void	set_sprite(int index, double x, double y, int texture);
-void	sprite_init();
 
 void	set_sprite(int index, double x, double y, int texture)
 {
@@ -35,11 +32,14 @@ void	set_sprite(int index, double x, double y, int texture)
 
 void	sprite_init()
 {
-	set_sprite(0, 22, 2, 3);
-	set_sprite(1, 21, 2, 4);	
-	set_sprite(2, 22, 22, 2);	
-	set_sprite(3, 20, 2, 5);
-	set_sprite(4, 6.5, 7.5, 6);
+	int i;
+
+	i = 0;
+	while(i < SPRITE_COUNT)
+	{
+		set_sprite(i, rand() % 22 + 1, rand() % 22 + 1, rand() % 8);
+		i++;
+	}
 }
 
 void	sprite_casting(t_view *v)
@@ -75,12 +75,12 @@ void	sprite_casting(t_view *v)
 		sprite_pos.y = sprite[sprite_order[i]].pos.y - v->pos.y;
 		transform.x = inv_det * (v->dir.y * sprite_pos.x - v->dir.x * sprite_pos.y);
 		transform.y = inv_det * (-v->plane.y * sprite_pos.x + v->plane.x * sprite_pos.y);
-		sprite_shrink = 16;
+		sprite_shrink = 2;
 		sprite_height = ABS((int)(v->h / transform.y)) / sprite_shrink;
 		sprite_width = ABS((int)(v->h / transform.y)) / sprite_shrink;
 		sprite_move = sprite_height;
 		sprite_move = (int)(sprite_move / transform.y);
-		
+
 		draw_start_y = -sprite_height / 2 + v->h / 2 + sprite_move;
 		draw_end_y = sprite_height / 2 + v->h / 2 + sprite_move;
 		sprite_screen_x = (int)((v->w / 2) * (1 + transform.x / transform.y));
@@ -98,7 +98,7 @@ void	sprite_casting(t_view *v)
 			draw_end_x = v->w - 1;
 
 		col = draw_start_x - 1;
-		if (sprite_screen_x > 0 && transform.y > 0 && draw_end_x > sprite_screen_x 
+		if (sprite_screen_x > 0 && transform.y > 0 && draw_end_x > sprite_screen_x
 				&& sprite_screen_x < v->w && draw_start_y < draw_end_y)
 		{
 			while (++col < draw_end_x)

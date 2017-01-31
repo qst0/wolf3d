@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 22:39:12 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/24 20:51:33 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/27 02:50:22 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	put_player_minimap(t_view *v)
 	p.x = v->pos.y * 10;
 	p.y = v->pos.x * 10;
 	draw_filled_square(v, p, 15, 0xFF0000);
-	p.x += v->dir.y * 10 ;
+	p.x += v->dir.y * 10;
 	p.y += v->dir.x * 10;
 	draw_filled_square(v, p, 10, 0xFF00);	
 }

@@ -61,7 +61,7 @@ void	raycast_init(t_view *v, t_raycast *cast, int x)
 	cast->map_x = (int)v->pos.x;
 	cast->map_y = (int)v->pos.y;
 	cast->tile = TILE_AT(cast->map_x, cast->map_y);
-	cast->hit = 0;	
+	cast->hit = 0;
 }
 
 void	raycast_dda(t_view *v, t_raycast *cast)
@@ -81,7 +81,6 @@ void	raycast_dda(t_view *v, t_raycast *cast)
 				cast->side = 1;
 			}
 			cast->tile = TILE_AT(cast->map_x,cast->map_y);
-				//world_map[cast->map_x][cast->map_y];
 			if (cast->tile > 0)
 				cast->hit = 1;
 		}

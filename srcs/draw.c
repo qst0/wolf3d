@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 05:43:05 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/24 19:47:07 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/27 04:37:25 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,14 @@
 void	draw_point_to_img(t_img *img, int x, int y, int color)
 {
 	int i;
-
-	i = (x * (img->bits_per_pixel / 8)) + (y * img->size_line);
-	img->pixels[i] = color;
-	img->pixels[++i] = color >> 8;
-	img->pixels[++i] = color >> 16;
+	
+	if (x > 0 && x < img->width && y > 0 & y < img->height)
+	{
+		i = (x * (img->bits_per_pixel / 8)) + (y * img->size_line);
+		img->pixels[i] = color;
+		img->pixels[++i] = color >> 8;
+		img->pixels[++i] = color >> 16;
+	}
 }
 
 t_rect	set_rect(int x, int y, int w, int h)

@@ -12,35 +12,39 @@
 
 #include <wolf.h>
 
+static void floorcast_prep(t_view *v, t_raycast *cast, t_2dp *floor_wall)
+{
+		if (cast->side == 0 && cast->ray_dir.x > 0)
+		{
+			floor_wall->x = cast->map_x;
+			floor_wall->y = cast->map_y + cast->wall_x;
+		}
+		else if (cast->side == 0 && cast->ray_dir.x < 0)
+		{
+			floor_wall->x = cast->map_x + 1.0;
+			floor_wall->y = cast->map_y + cast->wall_x;
+		}
+		else if (cast->side == 1 && cast->ray_dir.y > 0)
+		{
+			floor_wall->x = cast->map_x + cast->wall_x;
+			floor_wall->y = cast->map_y;
+		}
+		else
+		{
+			floor_wall->x = cast->map_x + cast->wall_x;
+			floor_wall->y = cast->map_y + 1.0;
+		}
+
+		if (cast->draw_end < 0)
+			cast->draw_end = v->h;
+}
+
 void	floorcast(t_view *v, t_raycast *cast, int x)
 {
 	int y;
 	t_2dp floor_wall;
 
-	if (cast->side == 0 && cast->ray_dir.x > 0) 
-	{
-		floor_wall.x = cast->map_x;
-		floor_wall.y = cast->map_y + cast->wall_x;
-	}
-	else if (cast->side == 0 && cast->ray_dir.x < 0)
-	{
-		floor_wall.x = cast->map_x + 1.0;
-		floor_wall.y = cast->map_y + cast->wall_x;
-	}
-	else if (cast->side == 1 && cast->ray_dir.y > 0)
-	{
-		floor_wall.x = cast->map_x + cast->wall_x;
-		floor_wall.y = cast->map_y;
-	}
-	else
-	{
-		floor_wall.x = cast->map_x + cast->wall_x;
-		floor_wall.y = cast->map_y + 1.0;
-	}
-
-	if (cast->draw_end < 0)
-		cast->draw_end = v->h;
-
+	floorcast_prep(v, cast, &floor_wall);
 	y = cast->draw_end;
 	while (++y < v->h)
 	{

@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 06:05:58 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/24 22:47:00 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/30 22:24:58 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@ int		key_press_hook(int keycode, t_view *v)
 	keycode == KEY_ESC ? exit(0) : 0;
 	key_toggle(&v->key, keycode, 1);
 	if (keycode == KEY_R)
-		v->plane.y = .6;
+		v->plane.y = .66;
+	if (keycode == KEY_T)
+		v->plane.x = 0;
 	return (0);
 }
 
@@ -38,16 +40,18 @@ int		motion_hook(int x, int y, t_view *v)
 	return (0);
 }
 
-int		mouse_press_hook(int x, int y, t_view *view)
+int		mouse_press_hook(int keycode, int x, int y, t_view *v)
 {
-	(void)view;
-	printf("x: %d\ty: %d", x, y);
+	(void)keycode;
+	v->mouse_x = x;
+	v->mouse_y = y;
 	return (0);
 }
 
-int		mouse_release_hook(int x, int y, t_view *view)
+int		mouse_release_hook(int keycode, int x, int y, t_view *v)
 {
-	(void)view;
-	printf("x: %d\ty: %d", x, y);
+	(void)keycode;
+	v->mouse_x = x;
+	v->mouse_y = y;
 	return (0);
 }

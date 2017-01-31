@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/23 03:27:52 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/24 22:22:23 by myoung           ###   ########.fr       */
+/*   Updated: 2017/01/27 19:06:01 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@
 # define GEN_TEX_COUNT 8
 # define TEX_WIDTH 64
 # define TEX_HEIGHT 64
-# define WINDOW_WIDTH 960 //1920 //960
-# define WINDOW_HEIGHT 600 //1200 //600
+# define WINDOW_WIDTH 1920 //960
+# define WINDOW_HEIGHT 1200 //600
 # define TILE_AT(x, y) v->map.cell[(int)(x)][(int)(y)]
 # define ABS(x) (((x) < 0) ? -(x) : (x))
 
@@ -58,7 +58,14 @@ typedef struct s_img
 	int			endian;
 	int			x_offset;
 	int			y_offset;
+	int			width;
+	int			height;
 }				t_img;
+
+typedef struct	s_xmp
+{
+	t_img	test;
+}				t_xmp;
 
 typedef struct	s_map
 {
@@ -73,6 +80,7 @@ typedef struct	s_view
 	void		*window;
 	void		*minimap_window;
 	int			**texture;
+	t_xmp		textures;
 	int			w;
 	int			h;
 	int			mouse_x;
@@ -171,8 +179,8 @@ int		loop_hook(t_view *v);
 int		motion_hook(int x, int y, t_view *v);
 int		key_press_hook(int keycode, t_view *v);
 int		key_release_hook(int keycode, t_view *v);
-int		mouse_press_hook(int x, int y, t_view *view);
-int		mouse_release_hook(int x, int y, t_view *view);
+int		mouse_press_hook(int keycode, int x, int y, t_view *view);
+int		mouse_release_hook(int keycode, int x, int y, t_view *view);
 int		exit_hook(t_view *v);
 
 void	key_toggle(t_keys *key, int keycode, int toggle);

@@ -12,7 +12,7 @@
 
 #include <wolf.h>
 
-void	keys_init(t_keys *key)
+static void key_init_split(t_keys *key)
 {
 	key->a = 0;
 	key->s = 0;
@@ -39,6 +39,11 @@ void	keys_init(t_keys *key)
 	key->five = 0;
 	key->nine = 0;
 	key->seven = 0;
+}
+
+void	keys_init(t_keys *key)
+{
+	key_init_split(key);
 	key->eight = 0;
 	key->zero = 0;
 	key->brace_r = 0;
@@ -89,7 +94,7 @@ static void	key_toggle_split_one(t_keys *key, int keycode, int toggle)
 	keycode == KEY_FIVE ? key->five = toggle : 0;
 	keycode == KEY_NINE ? key->nine = toggle : 0;
 	keycode == KEY_SEVEN ? key->seven = toggle : 0;
-}	
+}
 
 static void key_toggle_split_two(t_keys *key, int keycode, int toggle)
 {
@@ -103,7 +108,7 @@ static void key_toggle_split_two(t_keys *key, int keycode, int toggle)
 	keycode == KEY_P ? key->p = toggle : 0;
 	keycode == KEY_L ? key->l = toggle : 0;
 	keycode == KEY_J ? key->j = toggle : 0;
-	keycode == KEY_K ? key->k = toggle : 0;	
+	keycode == KEY_K ? key->k = toggle : 0;
 	keycode == KEY_SEMI ? key->semi = toggle : 0;
 	keycode == KEY_N ? key->n = toggle : 0;
 	keycode == KEY_M ? key->m = toggle : 0;

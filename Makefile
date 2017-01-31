@@ -6,7 +6,7 @@
 #    By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/01/19 05:40:13 by myoung            #+#    #+#              #
-#    Updated: 2017/01/24 20:19:12 by myoung           ###   ########.fr        #
+#    Updated: 2017/01/28 01:40:35 by myoung           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ CFLAGS = -Wall -Wextra -Werror -O3
 MAIN = main.c
 
 FILES +=	hooks.c		# hooks, all kinds
+FILES +=	init.c		# view init functions
 FILES +=	keys.c		# toggle keys
 FILES +=	time.c		# Keeping track of the fps and cur_sec
 FILES +=	utils.c		# Things I needed to print the fps
@@ -34,6 +35,9 @@ FILES +=	loop_hook.c	# THE LOOP HOOK ITSELF
 FILES +=	parse.c			# For parsing the map
 FILES +=	ft_strsplit.c	# For parsing
 
+SRCS = $(addprefix srcs/, $(FILES))
+OBJS = $(addprefix objs/, $(FILES:.c=.o))
+
 FRAMEWORKS = -framework OpenGL -framework AppKit
 INC = -I .
 
@@ -47,13 +51,20 @@ minilibx/libmlx.a:
 	@echo "Making minilibx"
 	@make -C minilibx re
 
-$(NAME): minilibx/libmlx.a
-	$(CC) $(CFLAGS) $(MAIN) $(FILES) \
+$(NAME): minilibx/libmlx.a $(OBJS)
+	$(CC) $(CFLAGS) $(MAIN) $(OBJS) \
 		$(MINILIBX) $(INC) $(FRAMEWORKS) -o $(NAME)
 	@echo "Creating ./$(NAME)"
 
+objs:
+	@mkdir objs
+
+objs/%.o: srcs/%.c | objs
+	@echo "Building $@"
+	@$(CC) $(CFLAGS) $(INC_MINILIBX) $(INC) -c $< -o $@
+
 clean:
-	@rm -rf build
+	@rm -rf objs
 	@echo "clean successful"
 
 tclean:
