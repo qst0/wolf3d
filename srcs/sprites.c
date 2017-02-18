@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 22:59:07 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/30 00:18:46 by myoung           ###   ########.fr       */
+/*   Updated: 2017/02/09 10:00:24 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,13 @@ void	set_sprite(int index, double x, double y, int texture)
 	sprite[index].texture = texture;
 }
 
-void	sprite_init()
+void	sprite_init(t_view *v)
 {
 	int i;
 
-	i = 0;
-	while(i < SPRITE_COUNT)
-	{
-		set_sprite(i, rand() % 22 + 1, rand() % 22 + 1, rand() % 8);
-		i++;
-	}
+	i = -1;
+	while(++i < SPRITE_COUNT)
+		set_sprite(i, rand() % v->map.height + 1, rand() % v->map.width + 1, rand() % 8);
 }
 
 void	sprite_casting(t_view *v)
@@ -62,13 +59,13 @@ void	sprite_casting(t_view *v)
 		int sprite_shrink;
 		int sprite_move;
 		int sprite_height;
-		int draw_start_y;
-		int draw_end_y;
 		int sprite_screen_x;
 		int sprite_width;
+		int draw_start_y;
+		int draw_end_y;
 		int draw_start_x;
 		int draw_end_x;
-		int col;
+
 
 		inv_det = 1.0 / (v->plane.x * v->dir.y - v->dir.x * v->plane.y);
 		sprite_pos.x = sprite[sprite_order[i]].pos.x - v->pos.x;
@@ -81,12 +78,12 @@ void	sprite_casting(t_view *v)
 		sprite_move = sprite_height;
 		sprite_move = (int)(sprite_move / transform.y);
 
+
 		draw_start_y = -sprite_height / 2 + v->h / 2 + sprite_move;
 		draw_end_y = sprite_height / 2 + v->h / 2 + sprite_move;
 		sprite_screen_x = (int)((v->w / 2) * (1 + transform.x / transform.y));
 		draw_start_x = -sprite_width / 2 + sprite_screen_x;
 		draw_end_x = sprite_width / 2 + sprite_screen_x;
-
 
 		if (draw_start_y < 0)
 			draw_start_y = 0;
@@ -97,6 +94,7 @@ void	sprite_casting(t_view *v)
 		if (draw_end_x >= v->w)
 			draw_end_x = v->w - 1;
 
+		int col;
 		col = draw_start_x - 1;
 		if (sprite_screen_x > 0 && transform.y > 0 && draw_end_x > sprite_screen_x
 				&& sprite_screen_x < v->w && draw_start_y < draw_end_y)
@@ -117,5 +115,6 @@ void	sprite_casting(t_view *v)
 				}
 			}
 		}
+
 	}
 }

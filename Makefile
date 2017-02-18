@@ -21,7 +21,6 @@ FILES +=	hooks.c		# hooks, all kinds
 FILES +=	init.c		# view init functions
 FILES +=	keys.c		# toggle keys
 FILES +=	time.c		# Keeping track of the fps and cur_sec
-FILES +=	utils.c		# Things I needed to print the fps
 FILES +=	texture.c	# Texture Generation
 FILES +=	draw.c		# point_to_img -  draw filled square
 FILES +=	image.c		# create / use image

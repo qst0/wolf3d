@@ -6,15 +6,12 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/23 03:27:52 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/27 19:06:01 by myoung           ###   ########.fr       */
+/*   Updated: 2017/02/09 09:54:06 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WOLF_H
 # define WOLF_H
-
-//REMOVE ME DAWG!
-# include <stdio.h>
 
 # include <stdlib.h>
 # include <math.h>
@@ -26,11 +23,12 @@
 
 # include <keys.h>
 
-# define GEN_TEX_COUNT 8
+# define TEX_COUNT 8
 # define TEX_WIDTH 64
 # define TEX_HEIGHT 64
-# define WINDOW_WIDTH 1920 //960
-# define WINDOW_HEIGHT 1200 //600
+
+# define WINDOW_WIDTH 960 // 1920
+# define WINDOW_HEIGHT 600 // 1200
 # define TILE_AT(x, y) v->map.cell[(int)(x)][(int)(y)]
 # define ABS(x) (((x) < 0) ? -(x) : (x))
 
@@ -62,11 +60,6 @@ typedef struct s_img
 	int			height;
 }				t_img;
 
-typedef struct	s_xmp
-{
-	t_img	test;
-}				t_xmp;
-
 typedef struct	s_map
 {
 	int		width;
@@ -80,7 +73,6 @@ typedef struct	s_view
 	void		*window;
 	void		*minimap_window;
 	int			**texture;
-	t_xmp		textures;
 	int			w;
 	int			h;
 	int			mouse_x;
@@ -103,6 +95,16 @@ typedef struct	s_view
 	t_img		minimap_image;
 	t_keys		key;
 }				t_view;
+
+typedef struct	s_floorcast
+{
+	t_2dp		wall;
+	t_2dp		pos;
+	int			tex_x;
+	int			tex_y;
+	int			texture;
+	double	weight;
+}								t_floorcast;
 
 typedef	struct	s_raycast
 {
@@ -151,10 +153,6 @@ void	ft_swap_int(int *a, int *b);
 
 void	use_image(t_view *v);
 void	create_image(void *mlx, t_img *image, int w, int h);
-
-int		nlen(int n);
-char	*itoa(int i);
-int		fake_floor(double x);
 
 void	ft_get_time(struct timespec *ts);
 void	update_time(t_view *v);

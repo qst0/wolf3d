@@ -58,6 +58,9 @@ t_map		parse_map(const char *filename)
 	int col;
 
 	row = 0;
+	while (row < 4097)
+		buff[row++] = 0;
+	row = 0;
 	fd = open(filename, O_RDONLY);
 	read(fd, buff, 4097);
 	lines = ft_strsplit(buff, '\n');
@@ -87,6 +90,6 @@ t_map		parse_map(const char *filename)
 		}
 		row++;
 	}
-	
+
 	return (map);
 }

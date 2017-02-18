@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 06:07:20 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/18 00:14:24 by myoung           ###   ########.fr       */
+/*   Updated: 2017/02/15 10:05:29 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ static void key_toggle_split_two(t_keys *key, int keycode, int toggle)
 
 void		key_toggle(t_keys *key, int keycode, int toggle)
 {
-	printf("%d\n", keycode);
 	if (keycode < 27)
 		key_toggle_split_one(key, keycode, toggle);
 	else

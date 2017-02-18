@@ -15,14 +15,14 @@
 void	put_player_minimap(t_view *v)
 {
 	t_2dp	p;
-	
+
 	//player location is flipped or something. Try to understand better.
-	p.x = v->pos.y * 10;
-	p.y = v->pos.x * 10;
+	p.x = v->pos.x * 10;
+	p.y = v->pos.y * 10;
 	draw_filled_square(v, p, 15, 0xFF0000);
-	p.x += v->dir.y * 10;
-	p.y += v->dir.x * 10;
-	draw_filled_square(v, p, 10, 0xFF00);	
+	p.x += v->dir.x * 10;
+	p.y += v->dir.y * 10;
+	draw_filled_square(v, p, 10, 0xFF00);
 }
 
 void	put_minimap(t_view *v)
@@ -33,10 +33,10 @@ void	put_minimap(t_view *v)
 
 	x = 0,
 	y = 0;
-	create_image(v->mlx, &v->minimap_image, v->map.width * 10, v->map.height * 10);
-	while (y < v->map.height)
+	create_image(v->mlx, &v->minimap_image, v->map.height * 10, v->map.width * 10);
+	while (y < v->map.width)
 	{
-		while (x < v->map.width)
+		while (x < v->map.height)
 		{
 			p.x = x * 10;
 			p.y = y * 10;
@@ -54,7 +54,6 @@ void	put_minimap(t_view *v)
 
 void	create_minimap(t_view *v)
 {
-	v->minimap_window = mlx_new_window(v->mlx, v->map.width * 10, v->map.height * 10, "Minimap");
+	v->minimap_window = mlx_new_window(v->mlx, v->map.height * 10, v->map.width * 10, "Minimap");
 	put_minimap(v);
 }
-

@@ -2,16 +2,16 @@
 
 static void init_view_vars(t_view *view)
 {
-	view->pos.x = 22;
-	view->pos.y = 21;
+	view->pos.x = view->map.height / 2;
+	view->pos.y = view->map.width / 2;
 	view->dir.x = -1;
 	view->dir.y = 0;
 	view->plane.x = 0;
 	view->plane.y = .66;
+	view->past = 0;
 	view->cur_sec = 0;
 	view->cur_time = 0;
 	view->old_time = 0;
-	view->past = 0;
 	view->mouse_x = 0;
 	view->mouse_y = 0;
 	view->rot_speed = 0.00016666;
@@ -31,9 +31,9 @@ void	init_view(int w, int h, char *title)
 	init_view_vars(view);
 	keys_init(&view->key);
 	set_hooks(view);
-	sprite_init();
 	texture_init(view);
-	create_minimap(view);
+	//sprite_init();
+	//create_minimap(view);
 	mlx_loop_hook(view->mlx, loop_hook, view);
 	mlx_loop(view->mlx);
 }

@@ -20,7 +20,17 @@ int		expose_hook(t_view *v)
 
 int		exit_hook(t_view *v)
 {
-	free(v->z_buff);
+	int i;
+
+	if (v->z_buff)
+		free(v->z_buff);
+	if (v->texture)
+	{
+		i = -1;
+		while (++i < TEX_COUNT)
+			free(v->texture[i]);
+		free(v->texture);
+	}
 	exit(0);
 }
 
@@ -40,6 +50,6 @@ int main(int argc, char **argv)
 {
 	if (argc != 1 && argv)
 		exit(1);
-	init_view(WINDOW_WIDTH, WINDOW_HEIGHT, "Wolf3d");
+	init_view(WINDOW_WIDTH, WINDOW_HEIGHT, "Raycasting Demo - Wolf3d");
 	return (0);
 }
