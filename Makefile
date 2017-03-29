@@ -6,7 +6,7 @@
 #    By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/01/19 05:40:13 by myoung            #+#    #+#              #
-#    Updated: 2017/01/28 01:40:35 by myoung           ###   ########.fr        #
+#    Updated: 2017/03/29 16:01:45 by myoung           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ FILES +=	image.c		# create / use image
 FILES +=	sort.c		# sort funcs needed for sprites
 FILES +=	move.c		# player movement and turning
 FILES +=	minimap.c	# minimap and player minimap token stuff
-FILES +=	sprites.c	# sprite functions and casting
+#FILES +=	sprites.c	# sprite functions and casting
 FILES +=	raycast.c	# The raycasting functions
 FILES +=	floorcast.c	# The raycasting functions
 FILES +=	loop_hook.c	# THE LOOP HOOK ITSELF
