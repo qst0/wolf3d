@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/23 03:27:52 by myoung            #+#    #+#             */
-/*   Updated: 2017/02/09 09:54:06 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 15:39:51 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ typedef	struct	s_raycast
 int		ft_atoi(const char *str);
 char	**ft_strsplit(const char *str, char c);
 t_map	parse_map(const char *filename);
+void	free_map(t_map *map);
 
 void	init_view(int w, int h, char *title);
 

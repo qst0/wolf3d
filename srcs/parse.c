@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/24 02:37:28 by myoung            #+#    #+#             */
-/*   Updated: 2017/03/29 12:00:49 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 15:47:12 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 */
 #include <stdlib.h>
 
-int			ft_atoi(const char *str)
+int					ft_atoi(const char *str)
 {
 	int					i;
 	int					sign;
@@ -52,7 +52,7 @@ int			ft_atoi(const char *str)
 	return (result * sign);
 }
 
-t_map		parser(t_map *map, char **lines, char **line)
+static t_map		parser(t_map *map, char **lines, char **line)
 {	
 	int col_size;
 	int row;
@@ -76,7 +76,20 @@ t_map		parser(t_map *map, char **lines, char **line)
 	return (*map);
 }
 
-t_map		parse_map(const char *filename)
+void				free_map(t_map *map)
+{
+	int i;
+
+	i = 0;
+	while (i < map->height)
+	{
+		free(map->cell[i]);
+		i++;
+	}
+	free(map);
+}
+
+t_map				parse_map(const char *filename)
 {
 	char	buff[4097];
 	char	**lines;

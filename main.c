@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 10:11:53 by myoung            #+#    #+#             */
-/*   Updated: 2017/03/29 11:20:33 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 15:41:44 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ int		exit_hook(t_view *v)
 			free(v->texture[i]);
 		free(v->texture);
 	}
+	if (v->map.cell)
+		free_map(&(v->map));
 	exit(0);
 }
 
