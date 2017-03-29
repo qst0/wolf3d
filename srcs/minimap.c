@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 22:39:12 by myoung            #+#    #+#             */
-/*   Updated: 2017/03/29 11:39:20 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 15:48:32 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	put_minimap(t_view *v)
 
 void	create_minimap(t_view *v)
 {
-	v->minimap_window = mlx_new_window(v->mlx, v->map.width * 10, v->map.height * 10, "Minimap");
+	v->minimap_window = mlx_new_window(v->mlx, v->map.width * 10,
+			v->map.height * 10, "Minimap");
 	put_minimap(v);
 }

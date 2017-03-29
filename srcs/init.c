@@ -32,7 +32,6 @@ void	init_view(int w, int h, char *title)
 	keys_init(&view->key);
 	set_hooks(view);
 	texture_init(view);
-	//sprite_init();
 	create_minimap(view);
 	mlx_loop_hook(view->mlx, loop_hook, view);
 	mlx_loop(view->mlx);
