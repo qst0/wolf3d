@@ -6,22 +6,28 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/24 02:37:28 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/24 20:46:24 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 12:00:49 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <wolf.h>
 
-//for read
+/*
+** imports for read
+*/
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
 
-//for open
+/*
+** imports for open
+*/
 #include <fcntl.h>
 #include <stdio.h>
 
-//for malloc
+/*
+** imports for malloc
+*/
 #include <stdlib.h>
 
 int			ft_atoi(const char *str)
@@ -46,50 +52,54 @@ int			ft_atoi(const char *str)
 	return (result * sign);
 }
 
-t_map		parse_map(const char *filename)
-{
-	int fd;
-	char buff[4097];
-
-	char **lines;
-	char **line;
-	t_map	map;
+t_map		parser(t_map *map, char **lines, char **line)
+{	
+	int col_size;
 	int row;
 	int col;
-
-	row = 0;
-	while (row < 4097)
-		buff[row++] = 0;
-	row = 0;
-	fd = open(filename, O_RDONLY);
-	read(fd, buff, 4097);
-	lines = ft_strsplit(buff, '\n');
-	while (lines[row])
-	{
-		line = ft_strsplit(lines[row], ' ');
-		col = 0;
-		while (line[col])
-			col++;
-		row++;
-	}
-	map.width = col;
-	map.height = row;
-	map.cell = (int**)malloc(sizeof(int*) * row);
-	int col_size;
-	col_size = col;
+	
+	map->cell = (int**)malloc(sizeof(int*) * map->height);
+	col_size = map->width;
 	row = 0;
 	while (lines[row])
 	{
 		line = ft_strsplit(lines[row], ' ');
-		map.cell[row] = (int*)malloc(sizeof(int) * col_size);
+		map->cell[row] = (int*)malloc(sizeof(int) * col_size);
 		col = 0;
 		while (line[col])
 		{
-			map.cell[row][col] = ft_atoi(line[col]);
+			map->cell[row][col] = ft_atoi(line[col]);
 			col++;
 		}
 		row++;
 	}
-
-	return (map);
+	return (*map);
 }
+
+t_map		parse_map(const char *filename)
+{
+	char	buff[4097];
+	char	**lines;
+	char	**line;
+	t_map	map;
+	int		fd;
+
+	map.height = 0;
+	while (map.height < 4097)
+		buff[map.height++] = 0;
+	fd = open(filename, O_RDONLY);
+	read(fd, buff, 4097);
+	close(fd);
+	map.height = 0;
+	lines = ft_strsplit(buff, '\n');
+	while (lines[map.height])
+	{
+		line = ft_strsplit(lines[map.height], ' ');
+		map.width = 0;
+		while (line[map.width])
+			map.width++;
+		map.height++;
+	}
+	return (parser(&map, lines, line));
+}
+

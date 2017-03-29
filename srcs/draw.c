@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 05:43:05 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/27 04:37:25 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 11:36:53 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	draw_filled_rect(t_view *v, t_rect rect, int color)
 	int x;
 
 	y = -1;
-	x = -16;
+	x = -1;
 	while (++y < rect.h)
 	{
 		while (++x < rect.w)
@@ -56,12 +56,12 @@ void	draw_filled_square(t_view *v, t_2dp p, int size, int color)
 	int y;
 	int x;
 
-	y = -1;
 	x = -1;
-	while (++y < size)
+	y = -1;
+	while (++x < size)
 	{
-		while (++x < size)
+		while (++y < size)
 			draw_point_to_img(&v->minimap_image, x + p.x, y + p.y, color);
-		x = -1;
+		y = -1;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 06:11:22 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/27 02:23:40 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 12:02:49 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ void			ft_get_time(struct timespec *ts)
 	ts->tv_nsec = mts.tv_nsec;
 }
 
-/* hack to count the time passed in seconds */
+/*
+** hack to count the time passed in seconds
+*/
 static void		view_check_moment(t_view *v)
 {
 	int				moment;
@@ -39,7 +41,9 @@ static void		view_check_moment(t_view *v)
 		v->past = 0;
 }
 
-/* set the frame time and the move and rot speed using it */
+/*
+** set the frame time and the move and rot speed using it
+*/
 static void		calc_view_fps(t_view *v)
 {
 	v->frame_time = (double)(v->cur_time - v->old_time) / 1000000000.0;

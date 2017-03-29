@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/19 05:57:24 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/19 05:57:50 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 11:40:35 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,10 @@ void	player_movement_forward_backward(t_view *v)
 		}
 }
 
-/* Left is 1, right is -1, both camera direction and plane must be rotated */
+/*
+** Left is 1, right is -1, both camera direction and plane must be rotated
+*/
+
 void	player_turn(t_view *v, int way, double speed_mod)
 {
 	double old_dir_x = v->dir.x;

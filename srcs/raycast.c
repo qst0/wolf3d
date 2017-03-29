@@ -6,13 +6,15 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 23:27:27 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/24 20:11:45 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 12:01:34 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <wolf.h>
 
-/* length of ray from one x or y side to the next x or y side */
+/*
+** length of ray from one x or y side to the next x or y side
+*/
 void	set_delta_dist(t_raycast *cast)
 {
 		t_2dp		ray_dir_sq;
@@ -24,7 +26,9 @@ void	set_delta_dist(t_raycast *cast)
 				/ (ray_dir_sq.y));
 }
 
-/* calculate step and initial side_dist */
+/*
+** calculate step and initial side_dist
+*/
 void	set_step_and_side_dist(t_raycast *cast)
 {
 	if (cast->ray_dir.x < 0)

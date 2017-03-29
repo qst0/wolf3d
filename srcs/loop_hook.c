@@ -6,7 +6,7 @@
 /*   By: myoung <myoung@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/23 23:21:00 by myoung            #+#    #+#             */
-/*   Updated: 2017/01/28 22:13:55 by myoung           ###   ########.fr       */
+/*   Updated: 2017/03/29 11:28:02 by myoung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int		loop_hook(t_view *v)
 	mlx_put_image_to_window(v->mlx, v->window, v->image.ptr,
 			v->image.x_offset, v->image.y_offset);
 	mlx_destroy_image(v->mlx, v->image.ptr);
-	//put_minimap(v);
+	put_minimap(v);
 	update_time(v);
 	return (0);
 }
