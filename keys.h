@@ -26,7 +26,7 @@
 */
 
 /* This isn't the whole thing, look above. */
-# define KEY_STRING "asdfhgzxcvbqweyt123465=97-80]ou[ip lj\"k;\\,/nm."
+# define KEY_STRING "asdfhgzxcv bqweryt123465=97-80]ou[ip lj\"k;\\,/nm."
 
 # define KEY_A 0
 # define KEY_S 1
