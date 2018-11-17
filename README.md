@@ -2,7 +2,7 @@
 
 > "Call Appogee Say Ardwolf"
 
-### 42 School Raytracer Project
+### 42 School Raycating Project
 
 Wolf3d gives the student a chance to study the ray casting technique and gain skills in event based programming.
 
